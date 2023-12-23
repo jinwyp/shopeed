@@ -7,8 +7,8 @@
 
 ### 功能展示 Introduction 
 
-![功能说明](https://github.com/jinwyp/shopeed/blob/master/docs/bing.jpg?raw=true)
-![功能说明](https://github.com/jinwyp/shopeed/blob/master/docs/jdcookie.jpg?raw=true)
+![功能说明1](https://github.com/jinwyp/shopeed/blob/main/docs/bing.jpg?raw=true)
+![功能说明2](https://github.com/jinwyp/shopeed/blob/main/docs/jdcookie.jpg?raw=true)
 
 
 ### How to use
