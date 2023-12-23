@@ -1,14 +1,14 @@
 {
-    "name": "JDCookie",
+    "name": "ShowCookie",
     "version": "1.0",
-    "description": "Show JD cookies",
+    "description": "Show cookies",
     "author": "JinWYP",
     "manifest_version": 3,
     "background": {
         "service_worker": "background.js"
     },
     "action": {
-        "default_title": "TGFCER Block User",
+        "default_title": "ShowCookies",
         "default_popup": "popup.html",
         "default_icon": {
             "16": "images/icon_16.png",

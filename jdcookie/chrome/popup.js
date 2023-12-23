@@ -1,18 +1,29 @@
-const buttonSearchElement = document.querySelector("#btn-search");
-const textSearchElement = document.querySelector("#input-searchtext");
+const buttonSearchCookies = document.querySelectorAll(".btn-show-cookie");
+const textInputSearchFilterCookie = document.querySelector("#input-search-filter-cookie");
 
-const divListContent = document.querySelector("#cookie-list");
+const ulContentCookieList = document.querySelector("#cookie-list");
+const ulContentCookieListPtKeyPtPin = document.querySelector("#cookie-pt-key-pt-pin");
+
 const spanContentPtKeyAndPin = document.querySelector("#jd_pt_key_pin");
 const spanContentPtKey = document.querySelector("#jd_pt_key");
 const spanContentPtPin = document.querySelector("#jd_pt_pin");
+
+const spanContentBingCookie = document.querySelector("#bing_cookie");
+
+const divContentBing = document.querySelector("#bing");
+const divContentJd = document.querySelector("#jd");
 
 
 const isDebug = false;
 let apiPrefix = isDebug ? 'http://localhost:8088' : 'http://tgfcer.jscool.net'
 let currentUsername = '';
 let currentUserId = '';
-let jdDomain = 'https://home.m.jd.com';
 
+let allCookies = {
+    stringCookie: '',
+    objectCookie: {},
+    arrayCookie: []
+}
 
 
 
@@ -32,14 +43,12 @@ async function chromeGetCurrentTab() {
 }
 
 
-
-
 async function chromeGetAllCookies(domain) {
 
     let tempCookieList = await chrome.cookies.getAll({ domain: domain })
 
     console.log("===== chromeGetAllCookies ====== ")
-        // console.log(tempCookieList);
+    console.log(tempCookieList);
 
     let stringCookie = ''
     let objectCookie = {}
@@ -60,35 +69,41 @@ async function chromeGetAllCookies(domain) {
         objectCookie,
         arrayCookie: tempCookieList
     }
-
 }
 
 
+// Chrome Storage function
+
+function saveUserFavoriteLinkListToSyncStorage(linkList) {
+    if (linkList && Array.isArray(linkList)) {
+        const linkListTemp = linkList.map(link => {
+            return link.threadId
+        })
+        chrome.storage.sync.set({ tgfcerUserFavoriteLinkIdList: linkListTemp }, function() {
+            console.log('Chrome Sync storage saved data: ', linkListTemp)
+        })
+    }
+}
+
+function getChromeData() {
+    chrome.storage.sync.get(null, function(result) {
+        console.log(`===== Chrome.storage get currently is `, result);
+
+        if (result) {
+            // callback (null, result[key])
+            currentUsername = result.tgfcerCurrentUsername || '';
+            currentUserId = result.tgfcerCurrentUserId || '';
+        }
+    });
+}
 
 
 
 // Tools function
-
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-const letter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-function getToken(lengthNumber) {
-
-    let resultIndex = getRandomInt(1, lengthNumber - 1);
-    let resultString = '';
-
-    for (let i = 0; i < lengthNumber; i++) {
-        if (i === resultIndex) {
-            resultString = resultString + 'jin'
-        }
-        resultString = resultString + letter[getRandomInt(0, 51)]
-    }
-
-    return resultString
-}
 
 
 function fallbackCopyTextToClipboard(text) {
@@ -123,80 +138,68 @@ function getDomainFromUrl(url) {
         domain: ''
     }
 
-    var tempUrl = url.replace(/(https?:\/\/)?(www.)?/i, '');
-    console.log("tempUrl: ", tempUrl)
+    // console.log("current url: ", url)
+    var urlWithoutHttpOrWWW = url.replace(/(https?:\/\/)?(www.)?/i, '');
+    // console.log("urlWithoutHttpOrWWW: ", urlWithoutHttpOrWWW)
 
     var urlArray = url.split("/");
+    console.log("urlArray: ", urlArray)
 
     var domainArray = urlArray[2].split('.');
-    var tempDomain = domainArray.slice(domainArray.length - 2).join('.');
-
+    var topDomain = domainArray.slice(-2).join('.');
+    console.log("domainArray : ", domainArray);
 
     domain.subDomain = urlArray[0] + '//' + urlArray[2]
-    domain.domainWithHttps = urlArray[0] + '//' + tempDomain
-    domain.domain = tempDomain
+    domain.domainWithHttps = urlArray[0] + '//' + topDomain
+    domain.domain = topDomain
 
-
-    console.log("domainArray : ", domainArray);
-    console.log("tempDomain : ", tempDomain);
-
-    console.log("urlArray : ", urlArray);
     console.log("currentTabDomain : ", domain);
 
-
     return domain
-
 }
 
 
 
 
 
-// Chrome Storage function
 
 
-function saveUserFavoriteLinkListToSyncStorage(linkList) {
-    if (linkList && Array.isArray(linkList)) {
-        const linkListTemp = linkList.map(link => {
-            return link.threadId
-        })
-        chrome.storage.sync.set({ tgfcerUserFavoriteLinkIdList: linkListTemp }, function() {
-            console.log('Chrome Sync storage saved data: ', linkListTemp)
-        })
+
+
+// Main Feature Function
+
+
+async function showCurrentBox(boxIdString) {
+
+    if (!boxIdString) {
+        let currentTab = await chromeGetCurrentTab();
+        boxIdString = currentTab.url;
     }
+
+    console.log("===== currentUrl: ", boxIdString)
+    if (boxIdString.indexOf('bing') > -1) {
+        divContentJd.classList.add("d-none");
+        divContentBing.classList.remove("d-none");
+    }else {
+        divContentJd.classList.remove("d-none");
+        divContentBing.classList.add("d-none");
+    }
+
 }
-
-function getChromeData() {
-    chrome.storage.sync.get(null, function(result) {
-        console.log(`===== Chrome.storage get currently is `, result);
-
-        if (result) {
-            // callback (null, result[key])
-            currentUsername = result.tgfcerCurrentUsername || '';
-            currentUserId = result.tgfcerCurrentUserId || '';
-        }
-    });
-}
-
-
-
-
-
-// User Feature Function
-
-let liCounter = 1;
 
 function clearList() {
-    divListContent.innerHTML = '';
+    ulContentCookieList.innerHTML = '';
 }
 
+
+let liCounter = 1;
 function appendList(text) {
 
     var li = document.createElement("li");
     li.setAttribute("id", "element_" + liCounter);
     li.appendChild(document.createTextNode(text));
     li.classList.add("list-group-item");
-    divListContent.appendChild(li);
+    ulContentCookieList.appendChild(li);
     liCounter = liCounter + 1
 }
 
@@ -208,28 +211,36 @@ function modifyText(node, text) {
 
 
 
-let allCookies = {
-    stringCookie: '',
-    objectCookie: {},
-    arrayCookie: []
-}
-
 
 
 
 function delegateSelectLi() {
-
-    divListContent.addEventListener("click", function(e) {
+    ulContentCookieList.addEventListener("click", function(e) {
         if (e.target && e.target.nodeName == "LI") {
             // List item found!  Output the ID!
             console.log("List item ", e.target.id, " was clicked!");
             copyTextToClipboard(e.target.innerHTML)
         }
     });
+
+    ulContentCookieListPtKeyPtPin.addEventListener("click", function(e) {
+        if (e.target && e.target.nodeName == "LI") {
+            // List item found!  Output the ID!
+            console.log("List item ", e.target.id, " was clicked!");
+            copyTextToClipboard(e.target.innerHTML)
+        }
+    });
+
+
+    buttonSearchCookies.forEach((tempButton) => {
+        tempButton.addEventListener('click', onClickButtonSearchCookie, false);
+    })
+
 }
 
-async function showCookieList(list) {
-    let inputFilterText = document.querySelector("#input-searchtext").value
+
+async function showFilterCookieList(list) {
+    let inputFilterText = document.querySelector("#input-search-filter-cookie").value
 
     if (list.arrayCookie.length > 0) {
 
@@ -251,62 +262,47 @@ async function showCookieList(list) {
 }
 
 
-async function onClickSearchButton(event3) {
+async function onClickButtonSearchCookie(event3) {
     event3.preventDefault()
 
     let currentTab = await chromeGetCurrentTab();
+    var domain = getDomainFromUrl(currentTab.url)
 
-    var currentUrl = currentTab.url;
-    var domain = getDomainFromUrl(currentUrl)
+    let inputDomainText = document.querySelector("#input-domaintext")
+    let inputCurrentDomain = inputDomainText.value
 
-    let inputJDDomain = document.querySelector("#input-domaintext")
-    let inputCurrentDomain = inputJDDomain.value
-
-    console.log("===== inputJDDomain value: ", inputJDDomain.value)
+    console.log("===== inputDomain value: ", inputDomainText.value)
 
     if (!inputCurrentDomain) {
-        inputJDDomain.value = domain.domain
+        inputDomainText.value = domain.domain
         inputCurrentDomain = domain.domain
         console.log("===== inputCurrentDomain: ", inputCurrentDomain)
     }
 
     allCookies = await chromeGetAllCookies(inputCurrentDomain)
 
-    await showCookieList(allCookies)
+    await showFilterCookieList(allCookies)
 
     modifyText(spanContentPtKey, "pt_key=" + allCookies.objectCookie.pt_key + ";")
     modifyText(spanContentPtPin, "pt_pin=" + allCookies.objectCookie.pt_pin + ";")
     modifyText(spanContentPtKeyAndPin, "pt_key=" + allCookies.objectCookie.pt_key + ";" + "pt_pin=" + allCookies.objectCookie.pt_pin + ";")
 
+    modifyText(spanContentBingCookie, allCookies.stringCookie)
+
 }
 
 
-async function onClickInput(event3) {
-    await showCookieList(allCookies)
+async function onClickInputFilterCookies(event3) {
+    await showFilterCookieList(allCookies)
 }
 
 
-function onClickSpan1(event3) {
-    copyTextToClipboard(spanContentPtKeyAndPin.innerHTML)
-}
-
-function onClickSpan2(event3) {
-    copyTextToClipboard(spanContentPtKey.innerHTML)
-}
-
-function onClickSpan3(event3) {
-    copyTextToClipboard(spanContentPtPin.innerHTML)
-}
-
-
-buttonSearchElement.addEventListener('click', onClickSearchButton, false);
-textSearchElement.addEventListener('input', onClickInput, false);
-
-spanContentPtKeyAndPin.addEventListener('click', onClickSpan1, false);
-spanContentPtKey.addEventListener('click', onClickSpan2, false);
-spanContentPtPin.addEventListener('click', onClickSpan3, false);
+// buttonSearchCookies.addEventListener('click', onClickButtonSearchCookie, false);
+textInputSearchFilterCookie.addEventListener('input', onClickInputFilterCookies, false);
 
 
 
 delegateSelectLi()
-    // getChromeData()
+showCurrentBox()
+// getChromeData()
+
