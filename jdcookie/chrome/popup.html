@@ -9,7 +9,7 @@
 
     <style>
         body{
-            width: 910px;
+            width: 820px;
             height: 500px;
         }
         .main {
@@ -22,12 +22,10 @@
             height: 1px;
             background-color: #cccccc;
         }
-        
-        .site-list li {
-            list-style: none;
-            border: 0px solid #52bae7;
-            padding-right: 3px;
-            padding-left: 3px;
+
+        .card_body_scoll {
+            height: 180px;
+            overflow-y: auto;
         }
 
     </style>
@@ -35,69 +33,53 @@
 
 <body>
 
-
-    <div class="container-fluid mt-2" id="bing">
+    <div class="container-fluid mt-1">
         <div class="row">
             <div class="col-sm-12">
-                <h5>Login <a href="https://www.bing.com/" target="_blank">https://bing.com/</a>  After login, go to <a href="https://bing.com/images/create" target="_blank">https://bing.com/images/create</a> </h5>
+                <h5> Instructions: </h5>
+            </div>
+            <div class="col-sm-12 site_intro_other">
+                <h6>Login first, then click "Show Cookie" button</h5>
+            </div>
+            <div class="col-sm-12 site_intro_bing">
+                <h6>Login <a href="https://www.bing.com/" target="_blank">https://bing.com/</a>  After login, go to <a href="https://bing.com/images/create" target="_blank">https://bing.com/images/create</a> </h5>
+            </div>
+            <div class="col-sm-12 site_intro_jd">
+                <h6>Login first 请先登录 <a href="https://m.jd.com/" target="_blank">https://m.jd.com/</a> </h6>
             </div>
         </div>
 
-        <form class="row mb-2">
+        <hr>
+
+        <form class="row mb-3">
             <div class="row">
-                <label for="input-domaintext" class="col-sm-3 col-form-label">Input Domain (Optional):</label>
+                <label for="input-domaintext" class="col-sm-3 col-form-label">
+                    <span class="site_input_other">Input Domain (Optional):</span>
+                    <span class="site_input_jd">请输入京东的域名(可选):</span>
+                </label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="input-domaintext" placeholder="https://www.bing.com/images/create">
+                    <input type="text" class="form-control" id="input-domaintext" placeholder="input domain">
                 </div>
                 <div class="col-sm-2">
-                    <button type="button" class="btn btn-outline-info btn-show-cookie">Show Cookie</button>
+                    <button type="button" class="btn btn-outline-primary" id="btn-show-cookie">Show Cookie</button>
                 </div>
             </div>
         </form>
 
-        <div class="card mb-2">
+        <div class="card border-primary mb-3">
             <div class="card-body">
                 <h6 class="card-title fw-bold mb-0">Click text below to copy cookie to the clipboard. 点击以下Cookie文字即自动复制到剪贴板)</h6>
             </div>
-            <ul class="list-group list-group-flush" id="cookie-pt-key-pt-pin">
+            <ul class="list-group list-group-flush card_body_scoll" id="cookie-pt-key-pt-pin">
                 <li class="list-group-item" id="bing_cookie">No cookie present. Please click the “Show Cookie” button.</li>
-            </ul>
-        </div>
-    </div>
 
-    <div class="container-fluid mt-2" id="jd">
-        <div class="row">
-            <div class="col-sm-12">
-                <h5>Login first 请先登录 <a href="https://m.jd.com/" target="_blank">https://m.jd.com/</a> </h5>
-            </div>
-        </div>
-
-        <form class="row mb-2">
-            <div class="row">
-                <label for="input-domaintext" class="col-sm-3 col-form-label">请输入京东的域名(可选):</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" id="input-domaintext" placeholder="https://home.m.jd.com">
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-outline-info btn-show-cookie">Show Cookie</button>
-                </div>
-            </div>
-        </form>
-
-        <div class="card mb-2">
-            <div class="card-body">
-                <h6 class="card-title fw-bold mb-0">Click text below to copy cookie to the clipboard. 点击以下Cookie文字即自动复制到剪贴板)</h6>
-            </div>
-            <ul class="list-group list-group-flush" id="cookie-pt-key-pt-pin">
                 <li class="list-group-item" id="jd_pt_key_pin">pt_key and pt_pin | No cookie present. 暂无 请点击 Show Cookie 按钮显示</li>
                 <li class="list-group-item" id="jd_pt_key">pt_key | No cookie present. 暂无 请点击 Show Cookie 按钮显示</li>
                 <li class="list-group-item" id="jd_pt_pin">pt_pi | No cookie present. 暂无 请点击 Show Cookie 按钮显示</li>
             </ul>
         </div>
-    </div>
 
-    <div class="container-fluid mt-2">
-        <div class="card mb-2">
+        <div class="card border-primary mb-1">
             <div class="card-body pt-1 pb-1">
                 <form class="row">
                     <div class="row">

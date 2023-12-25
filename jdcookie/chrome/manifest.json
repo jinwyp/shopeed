@@ -18,13 +18,15 @@
         }
     },
     "permissions": [
-        "activeTab", "tabs",
+        "activeTab", 
+        "tabs",
         "scripting",
         "clipboardWrite",
         "clipboardRead",
         "notifications",
         "declarativeContent",
-        "storage", "cookies"
+        "storage", 
+        "cookies"
     ],
 
     "host_permissions": ["<all_urls>"],
