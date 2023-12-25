@@ -1,4 +1,6 @@
 const buttonSearchCookies = document.querySelector("#btn-show-cookie");
+const buttonDeleteCookies = document.querySelector("#btn-del-cookie");
+const buttonDeleteLocalStorage = document.querySelector("#btn-del-localstorage");
 const inputTextSearchFilterCookie = document.querySelector("#input-search-filter-cookie");
 const inputTextDomainByUserInput = document.querySelector("#input-domaintext")
 
@@ -41,7 +43,6 @@ async function chromeGetCurrentTab() {
 async function chromeGetAllCookies(domain) {
 
     let tempCookieList = await chrome.cookies.getAll({ domain: domain })
-
     console.log("===== chromeGetAllCookies :", tempCookieList)
 
     let stringCookie = ''
@@ -63,6 +64,27 @@ async function chromeGetAllCookies(domain) {
         objectCookie,
         arrayCookie: tempCookieList
     }
+}
+
+async function chromeRemoveAllCookies(domain){
+    chrome.cookies.getAll({ domain: domain }, (cookies) => {
+        // Loop through each cookie and remove it
+        for (const cookie of cookies) {
+            chrome.cookies.remove({ url: `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path}`, name: cookie.name });
+        }
+        alert("All Cookies removed");
+    });
+}
+
+async function chromeRemoveLocalStorage(domain){
+    chrome.storage.local.clear(function() {
+        var error = chrome.runtime.lastError;
+        if (error) {
+            console.error(error);
+        }
+        alert("All LocalStorage removed");
+    });
+    chrome.storage.sync.clear(); // callback is optional
 }
 
 
@@ -332,8 +354,21 @@ async function onClickInputFilterCookies(event3) {
     await showFilterCookieList(allCookies)
 }
 
+async function onClickButtonDeleteCookie(event5) {
+    event5.preventDefault()
+    let domain = await getDomainFromUrl();
+    chromeRemoveAllCookies(domain.topDomain)
+}
+
+async function onClickButtonDeleteLocalStorage(event5) {
+    event5.preventDefault()
+    // let domain = await getDomainFromUrl();
+    chromeRemoveLocalStorage()
+}
 
 buttonSearchCookies.addEventListener('click', onClickButtonSearchCookie, false);
+buttonDeleteCookies.addEventListener('click', onClickButtonDeleteCookie, false);
+buttonDeleteLocalStorage.addEventListener('click', onClickButtonDeleteLocalStorage, false);
 inputTextSearchFilterCookie.addEventListener('input', onClickInputFilterCookies, false);
 
 
